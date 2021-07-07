@@ -27,18 +27,25 @@ public class Kata9 {
                         .map(movie -> ImmutableMap.of(
                                 "id", movie.getId(),
                                 "title", movie.getTitle(),
-                                "time", movie.getInterestingMoments()
-                                        .stream()
-                                        .filter(interestingMoment -> interestingMoment.getType().equals("Middle"))
-                                        .map(InterestingMoment::getTime)
-                                        .findFirst()
-                                        .get()
-                                ,
-                                "url", movie.getBoxarts()
-                                        .stream()
-                                        .reduce((x1, x2) -> (x1.getHeight() * x1.getWidth()) > (x2.getHeight() * x2.getWidth()) ? x1 : x2)
-                                        .map(BoxArt::getUrl)
-                                        .get())))
+                                "time", getMiddleInterestingMoment(movie),
+                                "url", getSmallestBoxArt(movie))))
                 .collect(Collectors.toList());
+    }
+
+    private static Date getMiddleInterestingMoment(Movie movie) {
+        return movie.getInterestingMoments()
+                .stream()
+                .filter(interestingMoment -> interestingMoment.getType().equals("Middle"))
+                .map(InterestingMoment::getTime)
+                .findFirst()
+                .get();
+    }
+
+    private static String getSmallestBoxArt(Movie movie) {
+        return movie.getBoxarts()
+                .stream()
+                .reduce((x1, x2) -> (x1.getHeight() * x1.getWidth()) > (x2.getHeight() * x2.getWidth()) ? x1 : x2)
+                .map(BoxArt::getUrl)
+                .get();
     }
 }

@@ -32,7 +32,9 @@ public class Kata8 {
                 DataUtil.getBookMarks()
                         .stream()
                         .map(Bookmark::getId),
-                (a,b) -> ImmutableMap.of("videoId", a, "bookmarkId", b)
+                (a, b) -> ImmutableMap.of(
+                        "videoId", a,
+                        "bookmarkId", b)
         ).collect(Collectors.toList());
     }
 }

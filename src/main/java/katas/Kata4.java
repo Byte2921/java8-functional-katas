@@ -3,6 +3,7 @@ package katas;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import model.BoxArt;
+import model.Movie;
 import model.MovieList;
 import util.DataUtil;
 
@@ -28,11 +29,15 @@ public class Kata4 {
                         .map(movie -> ImmutableMap.of(
                                 "id", movie.getId(),
                                 "title", movie.getTitle(),
-                                "boxart", movie.getBoxarts()
-                                        .stream()
-                                        .filter(boxArt -> boxArt.getWidth() == 150 && boxArt.getHeight() == 200)
-                                        .findFirst()
-                                        .get())))
+                                "boxart", getBoxArt(movie))))
                 .collect(Collectors.toList());
+    }
+
+    private static BoxArt getBoxArt(Movie movie) {
+        return movie.getBoxarts()
+                .stream()
+                .filter(boxArt -> boxArt.getWidth() == 150 && boxArt.getHeight() == 200)
+                .findFirst()
+                .get();
     }
 }

@@ -65,13 +65,21 @@ public class Kata10 {
                 .stream()
                 .map(listMap -> ImmutableMap.of(
                         "name", listMap.get("name"),
-                        "videos", DataUtil.getVideos()
-                                .stream()
-                                .filter(filterMap -> filterMap.get("listId").equals(listMap.get("id")))
-                                .map(videoMap -> ImmutableMap.of(
-                                        "id", videoMap.get("id"),
-                                        "title", videoMap.get("title")))
-                                .collect(Collectors.toList())))
+                        "videos", filterVideosBasedOnType(listMap)))
                 .collect(Collectors.toList());
+    }
+
+    private static List<ImmutableMap<String, Object>> filterVideosBasedOnType(Map listMap) {
+        return DataUtil.getVideos()
+                .stream()
+                .filter(filterMap -> filterMap.get("listId").equals(listMap.get("id")))
+                .map(Kata10::getVideoDetails)
+                .collect(Collectors.toList());
+    }
+
+    private static ImmutableMap<String, Object> getVideoDetails(Map videoMap) {
+        return ImmutableMap.of(
+                "id", videoMap.get("id"),
+                "title", videoMap.get("title"));
     }
 }

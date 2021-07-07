@@ -29,11 +29,15 @@ public class Kata7 {
                         .map(movie -> ImmutableMap.of(
                                 "id", movie.getId(),
                                 "title", movie.getTitle(),
-                                "boxart", movie.getBoxarts()
-                                        .stream()
-                                        .reduce((x1, x2) -> (x1.getHeight() * x1.getWidth()) > (x2.getHeight() * x2.getWidth()) ? x1 : x2)
-                                        .map(BoxArt::getUrl)
-                                        .get())))
+                                "boxart", getSmallestBoxArt(movie))))
                 .collect(Collectors.toList());
+    }
+
+    private static String getSmallestBoxArt(Movie movie) {
+        return movie.getBoxarts()
+                .stream()
+                .reduce((x1, x2) -> (x1.getHeight() * x1.getWidth()) > (x2.getHeight() * x2.getWidth()) ? x1 : x2)
+                .map(BoxArt::getUrl)
+                .get();
     }
 }

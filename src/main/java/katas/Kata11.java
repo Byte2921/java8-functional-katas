@@ -71,27 +71,37 @@ public class Kata11 {
                 .stream()
                 .map(listMap -> ImmutableMap.of(
                         "name", listMap.get("name"),
-                        "videos", (DataUtil.getVideos()
-                                .stream()
-                                .filter(filterMap -> filterMap.get("listId").equals(listMap.get("id")))
-                                .map(videoMap -> ImmutableMap.of(
-                                        "id", videoMap.get("id"),
-                                        "title", videoMap.get("title"),
-                                        "time", DataUtil.getBookmarkList()
-                                                .stream()
-                                                .filter(filterMap -> filterMap.get("videoId").equals(videoMap.get("id")))
-                                                .map(bookmarkMap -> bookmarkMap.get("time"))
-                                                .findFirst()
-                                                .get()
-                                        ,
-                                        "boxart", DataUtil.getBoxArts()
-                                                .stream()
-                                                .filter(filterMap -> filterMap.get("videoId").equals(videoMap.get("id")))
-                                                .map(boxartsMap -> boxartsMap.get("url"))
-                                                .findFirst()
-                                                .get()
-                                ))
-                                .collect(Collectors.toList()))))
+                        "videos", filterVideosBasedOnType(listMap)))
                 .collect(Collectors.toList());
+    }
+
+    private static List<ImmutableMap<String, Object>> filterVideosBasedOnType(Map listMap) {
+        return DataUtil.getVideos()
+                .stream()
+                .filter(filterMap -> filterMap.get("listId").equals(listMap.get("id")))
+                .map(videoMap -> ImmutableMap.of(
+                        "id", videoMap.get("id"),
+                        "title", videoMap.get("title"),
+                        "time", getBookmarkTime(videoMap),
+                        "boxart", getSmallestBoxArt(videoMap)))
+                .collect(Collectors.toList());
+    }
+
+    private static Object getBookmarkTime(Map videoMap) {
+        return DataUtil.getBookmarkList()
+                .stream()
+                .filter(filterMap -> filterMap.get("videoId").equals(videoMap.get("id")))
+                .map(bookmarkMap -> bookmarkMap.get("time"))
+                .findFirst()
+                .get();
+    }
+
+    private static Object getSmallestBoxArt(Map videoMap) {
+        return DataUtil.getBoxArts()
+                .stream()
+                .filter(filterMap -> filterMap.get("videoId").equals(videoMap.get("id")))
+                .map(boxartsMap -> boxartsMap.get("url"))
+                .findFirst()
+                .get();
     }
 }
