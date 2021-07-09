@@ -20,9 +20,9 @@ public class Kata3 {
         //return ImmutableList.of(1, 2, 3);
         return DataUtil.getMovieLists()
                 .stream()
-                .flatMap(movieList -> movieList.getVideos()
-                        .stream()
-                .map(Movie::getId))
+                .map(MovieList::getVideos)
+                .flatMap(List::stream)
+                .map(Movie::getId)
                 .collect(Collectors.toList());
     }
 }

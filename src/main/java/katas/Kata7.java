@@ -1,8 +1,6 @@
 package katas;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import model.Bookmark;
 import model.BoxArt;
 import model.Movie;
 import model.MovieList;
@@ -29,15 +27,19 @@ public class Kata7 {
                         .map(movie -> ImmutableMap.of(
                                 "id", movie.getId(),
                                 "title", movie.getTitle(),
-                                "boxart", getSmallestBoxArt(movie))))
+                                "boxart", getBoxArt(movie))))
                 .collect(Collectors.toList());
     }
 
-    private static String getSmallestBoxArt(Movie movie) {
+    private static String getBoxArt(Movie movie) {
         return movie.getBoxarts()
                 .stream()
-                .reduce((x1, x2) -> (x1.getHeight() * x1.getWidth()) > (x2.getHeight() * x2.getWidth()) ? x1 : x2)
+                .reduce(Kata7::findSmallestBoxArt)
                 .map(BoxArt::getUrl)
-                .get();
+                .orElse("");
+    }
+
+    private static BoxArt findSmallestBoxArt(BoxArt boxArt1, BoxArt boxArt2) {
+        return (boxArt1.getHeight() * boxArt1.getWidth()) < (boxArt2.getHeight() * boxArt2.getWidth()) ? boxArt1 : boxArt2;
     }
 }

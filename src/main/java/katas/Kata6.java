@@ -26,8 +26,12 @@ public class Kata6 {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList())
                 .stream()
-                .reduce((x1, x2) -> (x1.getHeight() * x1.getWidth()) > (x2.getHeight() * x2.getWidth()) ? x1 : x2)
+                .reduce(Kata6::getLargestBoxart)
                 .map(BoxArt::getUrl)
-                .get();
+                .orElse("");
+    }
+
+    private static BoxArt getLargestBoxart(BoxArt boxArt1, BoxArt boxArt2) {
+        return (boxArt1.getHeight() * boxArt1.getWidth()) > (boxArt1.getHeight() * boxArt1.getWidth()) ? boxArt1 : boxArt1;
     }
 }

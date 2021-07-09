@@ -1,6 +1,5 @@
 package katas;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import util.DataUtil;
 
@@ -83,7 +82,7 @@ public class Kata11 {
                         "id", videoMap.get("id"),
                         "title", videoMap.get("title"),
                         "time", getBookmarkTime(videoMap),
-                        "boxart", getSmallestBoxArt(videoMap)))
+                        "boxart", findBoxArt(videoMap)))
                 .collect(Collectors.toList());
     }
 
@@ -93,15 +92,21 @@ public class Kata11 {
                 .filter(filterMap -> filterMap.get("videoId").equals(videoMap.get("id")))
                 .map(bookmarkMap -> bookmarkMap.get("time"))
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
-    private static Object getSmallestBoxArt(Map videoMap) {
+    private static Object findBoxArt(Map videoMap) {
         return DataUtil.getBoxArts()
                 .stream()
                 .filter(filterMap -> filterMap.get("videoId").equals(videoMap.get("id")))
-                .map(boxartsMap -> boxartsMap.get("url"))
-                .findFirst()
-                .get();
+                .collect(Collectors.toList())
+                .stream()
+                .reduce(Kata11::findSmallestBoxArt)
+                .map(boxartMap -> boxartMap.get("url"))
+                .orElse(null);
+    }
+
+    private static Map findSmallestBoxArt(Map boxart1, Map boxart2) {
+        return (int)boxart1.get("width") * (int)boxart1.get("height") < (int)boxart2.get("width") * (int)boxart2.get("height") ? boxart1 : boxart2;
     }
 }

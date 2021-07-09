@@ -28,7 +28,7 @@ public class Kata9 {
                                 "id", movie.getId(),
                                 "title", movie.getTitle(),
                                 "time", getMiddleInterestingMoment(movie),
-                                "url", getSmallestBoxArt(movie))))
+                                "url", getBoxArt(movie))))
                 .collect(Collectors.toList());
     }
 
@@ -38,14 +38,18 @@ public class Kata9 {
                 .filter(interestingMoment -> interestingMoment.getType().equals("Middle"))
                 .map(InterestingMoment::getTime)
                 .findFirst()
-                .get();
+                .orElse(new Date());
     }
 
-    private static String getSmallestBoxArt(Movie movie) {
+    private static String getBoxArt(Movie movie) {
         return movie.getBoxarts()
                 .stream()
-                .reduce((x1, x2) -> (x1.getHeight() * x1.getWidth()) > (x2.getHeight() * x2.getWidth()) ? x1 : x2)
+                .reduce(Kata9::findSmallestBoxArt)
                 .map(BoxArt::getUrl)
-                .get();
+                .orElse(null);
+    }
+
+    private static BoxArt findSmallestBoxArt(BoxArt boxArt1, BoxArt boxArt2) {
+        return boxArt1.getHeight() * boxArt1.getWidth() < boxArt2.getHeight() * boxArt2.getWidth() ? boxArt1 : boxArt2;
     }
 }

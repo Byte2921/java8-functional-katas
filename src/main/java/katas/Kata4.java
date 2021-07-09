@@ -38,6 +38,6 @@ public class Kata4 {
                 .stream()
                 .filter(boxArt -> boxArt.getWidth() == 150 && boxArt.getHeight() == 200)
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 }
