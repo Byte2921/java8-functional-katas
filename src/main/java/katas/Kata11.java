@@ -1,11 +1,11 @@
 package katas;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import util.DataUtil;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /*
     Goal: Create a datastructure from the given data:
@@ -63,8 +63,50 @@ public class Kata11 {
         List<Map> boxArts = DataUtil.getBoxArts();
         List<Map> bookmarkList = DataUtil.getBookmarkList();
 
-        return ImmutableList.of(ImmutableMap.of("name", "someName", "videos", ImmutableList.of(
-                ImmutableMap.of("id", 5, "title", "The Chamber", "time", 123, "boxart", "someUrl")
-        )));
+        //return ImmutableList.of(ImmutableMap.of("name", "someName", "videos", ImmutableList.of(
+        //        ImmutableMap.of("id", 5, "title", "The Chamber", "time", 123, "boxart", "someUrl")
+        //)));
+        return DataUtil.getLists()
+                .stream()
+                .map(listMap -> ImmutableMap.of(
+                        "name", listMap.get("name"),
+                        "videos", filterVideosBasedOnType(listMap)))
+                .collect(Collectors.toList());
+    }
+
+    private static List<ImmutableMap<String, Object>> filterVideosBasedOnType(Map listMap) {
+        return DataUtil.getVideos()
+                .stream()
+                .filter(filterMap -> filterMap.get("listId").equals(listMap.get("id")))
+                .map(videoMap -> ImmutableMap.of(
+                        "id", videoMap.get("id"),
+                        "title", videoMap.get("title"),
+                        "time", getBookmarkTime(videoMap),
+                        "boxart", findBoxArt(videoMap)))
+                .collect(Collectors.toList());
+    }
+
+    private static Object getBookmarkTime(Map videoMap) {
+        return DataUtil.getBookmarkList()
+                .stream()
+                .filter(filterMap -> filterMap.get("videoId").equals(videoMap.get("id")))
+                .map(bookmarkMap -> bookmarkMap.get("time"))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private static Object findBoxArt(Map videoMap) {
+        return DataUtil.getBoxArts()
+                .stream()
+                .filter(filterMap -> filterMap.get("videoId").equals(videoMap.get("id")))
+                .collect(Collectors.toList())
+                .stream()
+                .reduce(Kata11::findSmallestBoxArt)
+                .map(boxartMap -> boxartMap.get("url"))
+                .orElse(null);
+    }
+
+    private static Map findSmallestBoxArt(Map boxart1, Map boxart2) {
+        return (int)boxart1.get("width") * (int)boxart1.get("height") < (int)boxart2.get("width") * (int)boxart2.get("height") ? boxart1 : boxart2;
     }
 }

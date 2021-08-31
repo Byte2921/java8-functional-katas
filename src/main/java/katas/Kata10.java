@@ -1,5 +1,6 @@
 package katas;
 
+import com.codepoetics.protonpack.StreamUtils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import model.MovieList;
@@ -8,6 +9,7 @@ import util.DataUtil;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /*
     Goal: Create a datastructure from the given data:
@@ -55,9 +57,29 @@ public class Kata10 {
         List<Map> lists = DataUtil.getLists();
         List<Map> videos = DataUtil.getVideos();
 
-        return ImmutableList.of(ImmutableMap.of("name", "someName", "videos", ImmutableList.of(
-                ImmutableMap.of("id", 5, "title", "The Chamber"),
-                ImmutableMap.of("id", 3, "title", "Fracture")
-        )));
+        //return ImmutableList.of(ImmutableMap.of("name", "someName", "videos", ImmutableList.of(
+        //ImmutableMap.of("id", 5, "title", "The Chamber"),
+        //ImmutableMap.of("id", 3, "title", "Fracture")
+        //)));
+        return DataUtil.getLists()
+                .stream()
+                .map(listMap -> ImmutableMap.of(
+                        "name", listMap.get("name"),
+                        "videos", filterVideosBasedOnType(listMap)))
+                .collect(Collectors.toList());
+    }
+
+    private static List<ImmutableMap<String, Object>> filterVideosBasedOnType(Map listMap) {
+        return DataUtil.getVideos()
+                .stream()
+                .filter(filterMap -> filterMap.get("listId").equals(listMap.get("id")))
+                .map(Kata10::getVideoDetails)
+                .collect(Collectors.toList());
+    }
+
+    private static ImmutableMap<String, Object> getVideoDetails(Map videoMap) {
+        return ImmutableMap.of(
+                "id", videoMap.get("id"),
+                "title", videoMap.get("title"));
     }
 }
